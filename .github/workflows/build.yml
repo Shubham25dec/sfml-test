@@ -45,7 +45,9 @@ jobs:
             -DCMAKE_BUILD_TYPE=Debug \
             -DSFML_BUILD_AUDIO=OFF \
             -DSFML_BUILD_NETWORK=OFF \
-            -DCMAKE_INSTALL_PREFIX=../install/arm64-v8a
+            -DSFML_BUILD_GRAPHICS=ON \
+            -DSFML_USE_SYSTEM_DEPS=OFF \
+            -DCMAKE_INSTALL_PREFIX=../../sfml-install/arm64-v8a
           make -j$(nproc)
           make install
 
@@ -62,7 +64,9 @@ jobs:
             -DCMAKE_BUILD_TYPE=Debug \
             -DSFML_BUILD_AUDIO=OFF \
             -DSFML_BUILD_NETWORK=OFF \
-            -DCMAKE_INSTALL_PREFIX=../install/x86_64
+            -DSFML_BUILD_GRAPHICS=ON \
+            -DSFML_USE_SYSTEM_DEPS=OFF \
+            -DCMAKE_INSTALL_PREFIX=../../sfml-install/x86_64
           make -j$(nproc)
           make install
 
@@ -70,8 +74,8 @@ jobs:
         run: |
           mkdir -p app/sfml/arm64-v8a
           mkdir -p app/sfml/x86_64
-          cp -r SFML/install/arm64-v8a/* app/sfml/arm64-v8a/
-          cp -r SFML/install/x86_64/* app/sfml/x86_64/
+          cp -r sfml-install/arm64-v8a/* app/sfml/arm64-v8a/
+          cp -r sfml-install/x86_64/* app/sfml/x86_64/
 
       - name: Make gradlew executable
         run: chmod +x gradlew
