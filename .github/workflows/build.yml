@@ -1,4 +1,4 @@
-name: Build SFML APK
+name: Build SFML APK v2
 
 on:
   push:
