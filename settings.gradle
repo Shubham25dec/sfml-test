@@ -1,0 +1,2 @@
+rootProject.name = "sfml-test"
+include ':app'

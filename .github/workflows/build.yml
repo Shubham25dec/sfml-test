@@ -1,0 +1,48 @@
+name: Build SFML APK
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+
+      - name: Install NDK
+        run: |
+          sdkmanager "ndk;25.2.9519653"
+          sdkmanager "cmake;3.22.1"
+
+      - name: Download SFML 2.5.1 Android prebuilts
+        run: |
+          wget -q https://github.com/SFML/SFML/releases/download/2.5.1/SFML-2.5.1-android-sdk.zip
+          unzip -q SFML-2.5.1-android-sdk.zip
+          mkdir -p app/sfml/arm64-v8a
+          mkdir -p app/sfml/x86_64
+          cp -r SFML-2.5.1/arm64-v8a/* app/sfml/arm64-v8a/
+          cp -r SFML-2.5.1/x86_64/* app/sfml/x86_64/
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: sfml-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
