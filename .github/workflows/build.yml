@@ -53,25 +53,6 @@ jobs:
           make -j$(nproc)
           make install
 
-      - name: Build FreeType for x86_64
-        run: |
-          export NDK=$ANDROID_SDK_ROOT/ndk/25.2.9519653
-          mkdir -p freetype-2.13.2/build-x86_64
-          cd freetype-2.13.2/build-x86_64
-          cmake .. \
-            -DCMAKE_TOOLCHAIN_FILE=$NDK/build/cmake/android.toolchain.cmake \
-            -DANDROID_ABI=x86_64 \
-            -DANDROID_PLATFORM=android-26 \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DFT_DISABLE_ZLIB=ON \
-            -DFT_DISABLE_BZIP2=ON \
-            -DFT_DISABLE_PNG=ON \
-            -DFT_DISABLE_HARFBUZZ=ON \
-            -DFT_DISABLE_BROTLI=ON \
-            -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/freetype-install/x86_64
-          make -j$(nproc)
-          make install
-
       - name: Build SFML for arm64-v8a
         run: |
           export NDK=$ANDROID_SDK_ROOT/ndk/25.2.9519653
@@ -89,33 +70,15 @@ jobs:
             -DFREETYPE_INCLUDE_DIRS=$GITHUB_WORKSPACE/freetype-install/arm64-v8a/include/freetype2
           make -j$(nproc)
 
-      - name: Build SFML for x86_64
-        run: |
-          export NDK=$ANDROID_SDK_ROOT/ndk/25.2.9519653
-          mkdir -p SFML/build-x86_64
-          cd SFML/build-x86_64
-          cmake .. \
-            -DCMAKE_TOOLCHAIN_FILE=$NDK/build/cmake/android.toolchain.cmake \
-            -DANDROID_ABI=x86_64 \
-            -DANDROID_PLATFORM=android-26 \
-            -DANDROID_STL=c++_shared \
-            -DCMAKE_BUILD_TYPE=Debug \
-            -DSFML_BUILD_AUDIO=OFF \
-            -DSFML_BUILD_NETWORK=OFF \
-            -DFREETYPE_LIBRARY=$GITHUB_WORKSPACE/freetype-install/x86_64/lib/libfreetype.a \
-            -DFREETYPE_INCLUDE_DIRS=$GITHUB_WORKSPACE/freetype-install/x86_64/include/freetype2
-          make -j$(nproc)
+      - name: List built SFML libs
+        run: find SFML/build-arm64/lib -type f
 
       - name: Copy SFML libs and headers to app
         run: |
           mkdir -p app/sfml/arm64-v8a/lib
           mkdir -p app/sfml/arm64-v8a/include
-          mkdir -p app/sfml/x86_64/lib
-          mkdir -p app/sfml/x86_64/include
           cp SFML/build-arm64/lib/*.so app/sfml/arm64-v8a/lib/
-          cp SFML/build-x86_64/lib/*.so app/sfml/x86_64/lib/
           cp -r SFML/include/SFML app/sfml/arm64-v8a/include/
-          cp -r SFML/include/SFML app/sfml/x86_64/include/
 
       - name: Make gradlew executable
         run: chmod +x gradlew
