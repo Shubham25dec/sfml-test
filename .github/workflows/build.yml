@@ -49,7 +49,7 @@ jobs:
             -DFT_DISABLE_PNG=ON \
             -DFT_DISABLE_HARFBUZZ=ON \
             -DFT_DISABLE_BROTLI=ON \
-            -DCMAKE_INSTALL_PREFIX=../../freetype-install/arm64-v8a
+            -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/freetype-install/arm64-v8a
           make -j$(nproc)
           make install
 
@@ -68,7 +68,7 @@ jobs:
             -DFT_DISABLE_PNG=ON \
             -DFT_DISABLE_HARFBUZZ=ON \
             -DFT_DISABLE_BROTLI=ON \
-            -DCMAKE_INSTALL_PREFIX=../../freetype-install/x86_64
+            -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/freetype-install/x86_64
           make -j$(nproc)
           make install
 
@@ -86,10 +86,8 @@ jobs:
             -DSFML_BUILD_AUDIO=OFF \
             -DSFML_BUILD_NETWORK=OFF \
             -DFREETYPE_LIBRARY=$GITHUB_WORKSPACE/freetype-install/arm64-v8a/lib/libfreetype.a \
-            -DFREETYPE_INCLUDE_DIRS=$GITHUB_WORKSPACE/freetype-install/arm64-v8a/include/freetype2 \
-            -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/sfml-install/arm64-v8a
+            -DFREETYPE_INCLUDE_DIRS=$GITHUB_WORKSPACE/freetype-install/arm64-v8a/include/freetype2
           make -j$(nproc)
-          make install
 
       - name: Build SFML for x86_64
         run: |
@@ -105,17 +103,19 @@ jobs:
             -DSFML_BUILD_AUDIO=OFF \
             -DSFML_BUILD_NETWORK=OFF \
             -DFREETYPE_LIBRARY=$GITHUB_WORKSPACE/freetype-install/x86_64/lib/libfreetype.a \
-            -DFREETYPE_INCLUDE_DIRS=$GITHUB_WORKSPACE/freetype-install/x86_64/include/freetype2 \
-            -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/sfml-install/x86_64
+            -DFREETYPE_INCLUDE_DIRS=$GITHUB_WORKSPACE/freetype-install/x86_64/include/freetype2
           make -j$(nproc)
-          make install
 
-      - name: Copy SFML libs to app
+      - name: Copy SFML libs and headers to app
         run: |
-          mkdir -p app/sfml/arm64-v8a
-          mkdir -p app/sfml/x86_64
-          cp -r $GITHUB_WORKSPACE/sfml-install/arm64-v8a/* app/sfml/arm64-v8a/
-          cp -r $GITHUB_WORKSPACE/sfml-install/x86_64/* app/sfml/x86_64/
+          mkdir -p app/sfml/arm64-v8a/lib
+          mkdir -p app/sfml/arm64-v8a/include
+          mkdir -p app/sfml/x86_64/lib
+          mkdir -p app/sfml/x86_64/include
+          cp SFML/build-arm64/lib/*.so app/sfml/arm64-v8a/lib/
+          cp SFML/build-x86_64/lib/*.so app/sfml/x86_64/lib/
+          cp -r SFML/include/SFML app/sfml/arm64-v8a/include/
+          cp -r SFML/include/SFML app/sfml/x86_64/include/
 
       - name: Make gradlew executable
         run: chmod +x gradlew
