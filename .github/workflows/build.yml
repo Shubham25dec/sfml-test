@@ -26,11 +26,51 @@ jobs:
           sdkmanager "ndk;25.2.9519653"
           sdkmanager "cmake;3.22.1"
 
-      - name: Download SFML 2.5.1 source
+      - name: Download sources
         run: |
           wget https://github.com/SFML/SFML/archive/refs/tags/2.5.1.zip
           unzip 2.5.1.zip
           mv SFML-2.5.1 SFML
+          wget https://download.savannah.gnu.org/releases/freetype/freetype-2.13.2.tar.gz
+          tar xf freetype-2.13.2.tar.gz
+
+      - name: Build FreeType for arm64-v8a
+        run: |
+          export NDK=$ANDROID_SDK_ROOT/ndk/25.2.9519653
+          mkdir -p freetype-2.13.2/build-arm64
+          cd freetype-2.13.2/build-arm64
+          cmake .. \
+            -DCMAKE_TOOLCHAIN_FILE=$NDK/build/cmake/android.toolchain.cmake \
+            -DANDROID_ABI=arm64-v8a \
+            -DANDROID_PLATFORM=android-26 \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DFT_DISABLE_ZLIB=ON \
+            -DFT_DISABLE_BZIP2=ON \
+            -DFT_DISABLE_PNG=ON \
+            -DFT_DISABLE_HARFBUZZ=ON \
+            -DFT_DISABLE_BROTLI=ON \
+            -DCMAKE_INSTALL_PREFIX=../../freetype-install/arm64-v8a
+          make -j$(nproc)
+          make install
+
+      - name: Build FreeType for x86_64
+        run: |
+          export NDK=$ANDROID_SDK_ROOT/ndk/25.2.9519653
+          mkdir -p freetype-2.13.2/build-x86_64
+          cd freetype-2.13.2/build-x86_64
+          cmake .. \
+            -DCMAKE_TOOLCHAIN_FILE=$NDK/build/cmake/android.toolchain.cmake \
+            -DANDROID_ABI=x86_64 \
+            -DANDROID_PLATFORM=android-26 \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DFT_DISABLE_ZLIB=ON \
+            -DFT_DISABLE_BZIP2=ON \
+            -DFT_DISABLE_PNG=ON \
+            -DFT_DISABLE_HARFBUZZ=ON \
+            -DFT_DISABLE_BROTLI=ON \
+            -DCMAKE_INSTALL_PREFIX=../../freetype-install/x86_64
+          make -j$(nproc)
+          make install
 
       - name: Build SFML for arm64-v8a
         run: |
@@ -45,9 +85,9 @@ jobs:
             -DCMAKE_BUILD_TYPE=Debug \
             -DSFML_BUILD_AUDIO=OFF \
             -DSFML_BUILD_NETWORK=OFF \
-            -DFREETYPE_LIBRARY=$NDK/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/libfreetype.a \
-            -DFREETYPE_INCLUDE_DIRS=$NDK/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/freetype2 \
-            -DCMAKE_INSTALL_PREFIX=../../sfml-install/arm64-v8a
+            -DFREETYPE_LIBRARY=$GITHUB_WORKSPACE/freetype-install/arm64-v8a/lib/libfreetype.a \
+            -DFREETYPE_INCLUDE_DIRS=$GITHUB_WORKSPACE/freetype-install/arm64-v8a/include/freetype2 \
+            -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/sfml-install/arm64-v8a
           make -j$(nproc)
           make install
 
@@ -64,9 +104,9 @@ jobs:
             -DCMAKE_BUILD_TYPE=Debug \
             -DSFML_BUILD_AUDIO=OFF \
             -DSFML_BUILD_NETWORK=OFF \
-            -DFREETYPE_LIBRARY=$NDK/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/x86_64-linux-android/libfreetype.a \
-            -DFREETYPE_INCLUDE_DIRS=$NDK/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/freetype2 \
-            -DCMAKE_INSTALL_PREFIX=../../sfml-install/x86_64
+            -DFREETYPE_LIBRARY=$GITHUB_WORKSPACE/freetype-install/x86_64/lib/libfreetype.a \
+            -DFREETYPE_INCLUDE_DIRS=$GITHUB_WORKSPACE/freetype-install/x86_64/include/freetype2 \
+            -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/sfml-install/x86_64
           make -j$(nproc)
           make install
 
@@ -74,8 +114,8 @@ jobs:
         run: |
           mkdir -p app/sfml/arm64-v8a
           mkdir -p app/sfml/x86_64
-          cp -r sfml-install/arm64-v8a/* app/sfml/arm64-v8a/
-          cp -r sfml-install/x86_64/* app/sfml/x86_64/
+          cp -r $GITHUB_WORKSPACE/sfml-install/arm64-v8a/* app/sfml/arm64-v8a/
+          cp -r $GITHUB_WORKSPACE/sfml-install/x86_64/* app/sfml/x86_64/
 
       - name: Make gradlew executable
         run: chmod +x gradlew
