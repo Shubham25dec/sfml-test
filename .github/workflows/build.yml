@@ -70,15 +70,16 @@ jobs:
             -DFREETYPE_INCLUDE_DIRS=$GITHUB_WORKSPACE/freetype-install/arm64-v8a/include/freetype2
           make -j$(nproc)
 
-      - name: List built SFML libs
-        run: find SFML/build-arm64/lib -type f
-
       - name: Copy SFML libs and headers to app
         run: |
+          export NDK=$ANDROID_SDK_ROOT/ndk/25.2.9519653
           mkdir -p app/sfml/arm64-v8a/lib
           mkdir -p app/sfml/arm64-v8a/include
+          mkdir -p app/src/main/jniLibs/arm64-v8a
           cp SFML/build-arm64/lib/*.so app/sfml/arm64-v8a/lib/
           cp -r SFML/include/SFML app/sfml/arm64-v8a/include/
+          cp SFML/build-arm64/lib/*.so app/src/main/jniLibs/arm64-v8a/
+          cp $NDK/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/libc++_shared.so app/src/main/jniLibs/arm64-v8a/
 
       - name: Make gradlew executable
         run: chmod +x gradlew

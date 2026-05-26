@@ -30,7 +30,7 @@ android {
 
     sourceSets {
         main {
-            jniLibs.srcDirs = ['sfml/arm64-v8a/lib']
+            jniLibs.srcDirs = ['src/main/jniLibs']
         }
     }
 
