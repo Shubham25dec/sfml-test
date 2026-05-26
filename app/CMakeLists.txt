@@ -15,9 +15,9 @@ add_library(sfml-graphics SHARED IMPORTED)
 set_target_properties(sfml-graphics PROPERTIES
     IMPORTED_LOCATION ${SFML_DIR}/lib/libsfml-graphics-d.so)
 
-add_library(sfml-activity SHARED IMPORTED)
-set_target_properties(sfml-activity PROPERTIES
-    IMPORTED_LOCATION ${SFML_DIR}/lib/libsfml-activity-d.so)
+add_library(sfml-main STATIC IMPORTED)
+set_target_properties(sfml-main PROPERTIES
+    IMPORTED_LOCATION ${SFML_DIR}/lib/libsfml-main-d.a)
 
 add_library(main SHARED
     src/main/cpp/main.cpp)
@@ -26,6 +26,7 @@ target_include_directories(main PRIVATE
     ${SFML_DIR}/include)
 
 target_link_libraries(main
+    -Wl,--whole-archive sfml-main -Wl,--no-whole-archive
     sfml-graphics
     sfml-window
     sfml-system
