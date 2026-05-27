@@ -10,10 +10,10 @@ int main()
     float radius = 40.f;
     sf::CircleShape ball(radius);
     ball.setFillColor(sf::Color::White);
-
     ball.setPosition(screenMode.width / 2.f - radius, screenMode.height / 2.f - radius);
 
-    sf::Vector2f velocity(5.f, 5.f);
+    sf::Vector2f velocity(10.f, 10.f);
+    bool focused = true;
 
     while (window.isOpen())
     {
@@ -22,8 +22,20 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-            if (event.type == sf::Event::TouchBegan)
-                window.close();
+            if (event.type == sf::Event::LostFocus)
+                focused = false;
+            if (event.type == sf::Event::GainedFocus)
+            {
+                focused = true;
+                // Recreate the window to restore the EGL context
+                window.create(screenMode, "SFML Bouncing Ball");
+            }
+        }
+
+        if (!focused)
+        {
+            sf::sleep(sf::milliseconds(100));
+            continue;
         }
 
         ball.move(velocity);
@@ -32,7 +44,6 @@ int main()
 
         if (pos.x <= 0 || pos.x + (radius * 2) >= screenMode.width)
             velocity.x = -velocity.x;
-
         if (pos.y <= 0 || pos.y + (radius * 2) >= screenMode.height)
             velocity.y = -velocity.y;
 
