@@ -24,10 +24,12 @@ set_target_properties(sfml-main PROPERTIES
     IMPORTED_LOCATION ${SFML_DIR}/lib/libsfml-main-d.a)
 
 add_library(main SHARED
-    src/main/cpp/main.cpp)
+    src/main/cpp/main.cpp
+    src/main/cpp/RandomColor.cpp)
 
 target_include_directories(main PRIVATE
-    ${SFML_DIR}/include)
+    ${SFML_DIR}/include
+    src/main/cpp)
 
 target_link_libraries(main
     -Wl,--whole-archive sfml-main -Wl,--no-whole-archive

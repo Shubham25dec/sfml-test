@@ -3,12 +3,25 @@
 #include <SFML/System.hpp>
 #include <SFML/Main.hpp>
 #include <cstdlib>
+#include <ctime>
 #include <sstream>
+#include "RandomColor.hpp"
 
 int main()
 {
+    srand((unsigned int)time(nullptr));
+
     sf::VideoMode screenMode = sf::VideoMode::getDesktopMode();
-    sf::RenderWindow window(screenMode, "SFML Bouncing Ball");
+    sf::RenderWindow window(screenMode, "SFML Test");
+
+    // Background texture
+    sf::Texture bgTexture;
+    bgTexture.loadFromFile("bg.png");
+    sf::Sprite bgSprite(bgTexture);
+    bgSprite.setScale(
+        (float)screenMode.width / bgTexture.getSize().x,
+        (float)screenMode.height / bgTexture.getSize().y
+    );
 
     // Font
     sf::Font font;
@@ -20,6 +33,14 @@ int main()
     fpsText.setCharacterSize(40);
     fpsText.setFillColor(sf::Color::Yellow);
     fpsText.setPosition(10.f, 10.f);
+
+    // Touch text
+    sf::Text touchText;
+    touchText.setFont(font);
+    touchText.setCharacterSize(40);
+    touchText.setFillColor(sf::Color::Cyan);
+    touchText.setPosition(10.f, 60.f);
+    touchText.setString("Touch: none");
 
     // Hello World text
     sf::Text helloText;
@@ -36,9 +57,8 @@ int main()
     // Ball
     float radius = 40.f;
     sf::CircleShape ball(radius);
-    ball.setFillColor(sf::Color::White);
+    ball.setFillColor(getRandomColor());
     ball.setPosition(screenMode.width / 2.f - radius, screenMode.height / 2.f - radius);
-
     sf::Vector2f velocity(10.f, 10.f);
 
     // Audio
@@ -80,6 +100,13 @@ int main()
 
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
                 window.close();
+
+            if (event.type == sf::Event::TouchBegan || event.type == sf::Event::TouchMoved)
+            {
+                std::ostringstream ss;
+                ss << "Touch: (" << event.touch.x << ", " << event.touch.y << ")";
+                touchText.setString(ss.str());
+            }
         }
 
         if (window.hasFocus())
@@ -115,10 +142,12 @@ int main()
             if (bounced)
                 collisionSound.play();
 
-            window.clear(sf::Color(128, 128, 128));
+            window.clear();
+            window.draw(bgSprite);
             window.draw(helloText);
             window.draw(ball);
             window.draw(fpsText);
+            window.draw(touchText);
             window.display();
         }
         else
