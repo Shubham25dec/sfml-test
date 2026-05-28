@@ -145,7 +145,7 @@ jobs:
             -DFREETYPE_LIBRARY=$GITHUB_WORKSPACE/freetype-install/arm64-v8a/lib/libfreetype.a \
             -DFREETYPE_INCLUDE_DIRS=$GITHUB_WORKSPACE/freetype-install/arm64-v8a/include/freetype2 \
             -DOPENAL_LIBRARY=$GITHUB_WORKSPACE/openal-install/arm64-v8a/lib/libopenal.so \
-            -DOPENAL_INCLUDE_DIR=$GITHUB_WORKSPACE/openal-install/arm64-v8a/include \
+            -DOPENAL_INCLUDE_DIR=$GITHUB_WORKSPACE/openal-install/arm64-v8a/include/AL \
             -DVORBIS_LIBRARY=$GITHUB_WORKSPACE/vorbis-install/arm64-v8a/lib/libvorbis.a \
             -DVORBISENC_LIBRARY=$GITHUB_WORKSPACE/vorbis-install/arm64-v8a/lib/libvorbisenc.a \
             -DVORBISFILE_LIBRARY=$GITHUB_WORKSPACE/vorbis-install/arm64-v8a/lib/libvorbisfile.a \
