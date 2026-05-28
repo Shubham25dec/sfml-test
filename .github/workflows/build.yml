@@ -125,6 +125,7 @@ jobs:
             -DOPENAL_LIBRARY=$GITHUB_WORKSPACE/openal-install/arm64-v8a/lib/libopenal.so \
             -DOPENAL_INCLUDE_DIR=$GITHUB_WORKSPACE/openal-install/arm64-v8a/include \
             -DVORBIS_LIBRARY=$GITHUB_WORKSPACE/vorbis-install/arm64-v8a/lib/libvorbis.a \
+            -DVORBISENC_LIBRARY=$GITHUB_WORKSPACE/vorbis-install/arm64-v8a/lib/libvorbisenc.a \
             -DVORBISFILE_LIBRARY=$GITHUB_WORKSPACE/vorbis-install/arm64-v8a/lib/libvorbisfile.a \
             -DVORBIS_INCLUDE_DIR=$GITHUB_WORKSPACE/vorbis-install/arm64-v8a/include \
             -DOGG_LIBRARY=$GITHUB_WORKSPACE/ogg-install/arm64-v8a/lib/libogg.a \
