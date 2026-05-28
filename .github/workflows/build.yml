@@ -33,6 +33,8 @@ jobs:
           mv SFML-2.5.1 SFML
           wget https://download.savannah.gnu.org/releases/freetype/freetype-2.13.2.tar.gz
           tar xf freetype-2.13.2.tar.gz
+          wget https://github.com/kcat/openal-soft/archive/refs/tags/1.23.1.tar.gz
+          tar xf 1.23.1.tar.gz
 
       - name: Build FreeType for arm64-v8a
         run: |
@@ -53,6 +55,24 @@ jobs:
           make -j$(nproc)
           make install
 
+      - name: Build OpenAL for arm64-v8a
+        run: |
+          export NDK=$ANDROID_SDK_ROOT/ndk/25.2.9519653
+          mkdir -p openal-soft-1.23.1/build-arm64
+          cd openal-soft-1.23.1/build-arm64
+          cmake .. \
+            -DCMAKE_TOOLCHAIN_FILE=$NDK/build/cmake/android.toolchain.cmake \
+            -DANDROID_ABI=arm64-v8a \
+            -DANDROID_PLATFORM=android-26 \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DALSOFT_EXAMPLES=OFF \
+            -DALSOFT_TESTS=OFF \
+            -DALSOFT_UTILS=OFF \
+            -DLIBTYPE=SHARED \
+            -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/openal-install/arm64-v8a
+          make -j$(nproc)
+          make install
+
       - name: Build SFML for arm64-v8a
         run: |
           export NDK=$ANDROID_SDK_ROOT/ndk/25.2.9519653
@@ -67,7 +87,9 @@ jobs:
             -DSFML_BUILD_AUDIO=ON \
             -DSFML_BUILD_NETWORK=OFF \
             -DFREETYPE_LIBRARY=$GITHUB_WORKSPACE/freetype-install/arm64-v8a/lib/libfreetype.a \
-            -DFREETYPE_INCLUDE_DIRS=$GITHUB_WORKSPACE/freetype-install/arm64-v8a/include/freetype2
+            -DFREETYPE_INCLUDE_DIRS=$GITHUB_WORKSPACE/freetype-install/arm64-v8a/include/freetype2 \
+            -DOPENAL_LIBRARY=$GITHUB_WORKSPACE/openal-install/arm64-v8a/lib/libopenal.so \
+            -DOPENAL_INCLUDE_DIR=$GITHUB_WORKSPACE/openal-install/arm64-v8a/include
           make -j$(nproc)
 
       - name: Copy SFML libs and headers to app
@@ -80,6 +102,7 @@ jobs:
           cp SFML/build-arm64/lib/*.a app/sfml/arm64-v8a/lib/
           cp -r SFML/include/SFML app/sfml/arm64-v8a/include/
           cp SFML/build-arm64/lib/*.so app/src/main/jniLibs/arm64-v8a/
+          cp $GITHUB_WORKSPACE/openal-install/arm64-v8a/lib/libopenal.so app/src/main/jniLibs/arm64-v8a/
           cp $NDK/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/libc++_shared.so app/src/main/jniLibs/arm64-v8a/
 
       - name: Make gradlew executable
