@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Main.hpp>
 #include <cstdlib>
@@ -40,6 +41,18 @@ int main()
 
     sf::Vector2f velocity(10.f, 10.f);
 
+    // Audio
+    sf::Music bgm;
+    bgm.openFromFile("bgm.ogg");
+    bgm.setLoop(true);
+    bgm.setVolume(50.f);
+    bgm.play();
+
+    sf::SoundBuffer collisionBuffer;
+    collisionBuffer.loadFromFile("collision.wav");
+    sf::Sound collisionSound;
+    collisionSound.setBuffer(collisionBuffer);
+
     // FPS tracking
     sf::Clock clock;
     int frameCount = 0;
@@ -54,10 +67,16 @@ int main()
                 window.close();
 
             if (event.type == sf::Event::LostFocus)
+            {
                 window.setActive(false);
+                bgm.pause();
+            }
 
             if (event.type == sf::Event::GainedFocus)
+            {
                 window.setActive(true);
+                bgm.play();
+            }
 
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
                 window.close();
@@ -80,13 +99,21 @@ int main()
             }
 
             ball.move(velocity);
-
             sf::Vector2f pos = ball.getPosition();
 
+            bool bounced = false;
             if (pos.x <= 0 || pos.x + (radius * 2) >= screenMode.width)
+            {
                 velocity.x = -velocity.x;
+                bounced = true;
+            }
             if (pos.y <= 0 || pos.y + (radius * 2) >= screenMode.height)
+            {
                 velocity.y = -velocity.y;
+                bounced = true;
+            }
+            if (bounced)
+                collisionSound.play();
 
             window.clear(sf::Color(128, 128, 128));
             window.draw(helloText);

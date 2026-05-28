@@ -15,6 +15,10 @@ add_library(sfml-graphics SHARED IMPORTED)
 set_target_properties(sfml-graphics PROPERTIES
     IMPORTED_LOCATION ${SFML_DIR}/lib/libsfml-graphics-d.so)
 
+add_library(sfml-audio SHARED IMPORTED)
+set_target_properties(sfml-audio PROPERTIES
+    IMPORTED_LOCATION ${SFML_DIR}/lib/libsfml-audio-d.so)
+
 add_library(sfml-main STATIC IMPORTED)
 set_target_properties(sfml-main PROPERTIES
     IMPORTED_LOCATION ${SFML_DIR}/lib/libsfml-main-d.a)
@@ -27,6 +31,7 @@ target_include_directories(main PRIVATE
 
 target_link_libraries(main
     -Wl,--whole-archive sfml-main -Wl,--no-whole-archive
+    sfml-audio
     sfml-graphics
     sfml-window
     sfml-system
