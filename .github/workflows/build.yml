@@ -129,7 +129,10 @@ jobs:
             -DVORBISFILE_LIBRARY=$GITHUB_WORKSPACE/vorbis-install/arm64-v8a/lib/libvorbisfile.a \
             -DVORBIS_INCLUDE_DIR=$GITHUB_WORKSPACE/vorbis-install/arm64-v8a/include \
             -DOGG_LIBRARY=$GITHUB_WORKSPACE/ogg-install/arm64-v8a/lib/libogg.a \
-            -DOGG_INCLUDE_DIR=$GITHUB_WORKSPACE/ogg-install/arm64-v8a/include
+            -DOGG_INCLUDE_DIR=$GITHUB_WORKSPACE/ogg-install/arm64-v8a/include \
+            -DFLAC_LIBRARY=FLAC_LIBRARY-NOTFOUND \
+            -DFLAC_INCLUDE_DIR=FLAC_INCLUDE_DIR-NOTFOUND \
+            -DSFML_ENABLE_FLAC=OFF
           make -j$(nproc)
 
       - name: Copy SFML libs and headers to app
