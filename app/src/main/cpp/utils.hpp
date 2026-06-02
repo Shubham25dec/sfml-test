@@ -58,12 +58,31 @@ struct RNG{
 RNG rng; //Globally accessible ready-to-use rng
 
 
+inline sf::Font load_font(std::string path){
+	sf::Font font;
+		if (!(font.loadFromFile(path)))
+	{
+		std::cout << ("Couldn't load requested font: ")<<path<<"\n";
+		exit(69);
+	}
+	return font;
+}
+
+
+inline sf::Text  get_render_text(sf::Font &font, int size=30, sf::Color color = sf::Color::White){
+	sf::Text text;
+	text.setFont(font);
+	text.setCharacterSize(size);
+	text.setFillColor(color);
+	return text;
+}
+
+
 inline void show_info(sf::RenderWindow& window, sf::Text& text, std::string info, sf::Vector2f pos={10, 10}, std::string prefix="Info"){
 	text.setString(prefix + info);
 	text.setPosition(pos);
 	window.draw(text);
 }
-
 
 
 inline float get_distance(const sf::Vector2f& A, const sf::Vector2f& B) {
