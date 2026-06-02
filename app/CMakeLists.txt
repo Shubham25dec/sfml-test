@@ -25,11 +25,12 @@ set_target_properties(sfml-main PROPERTIES
 
 add_library(main SHARED
     src/main/cpp/main.cpp
-    src/main/cpp/RandomColor.cpp)
+)
 
 target_include_directories(main PRIVATE
     ${SFML_DIR}/include
-    src/main/cpp)
+    src/main/cpp
+)
 
 target_link_libraries(main
     -Wl,--whole-archive sfml-main -Wl,--no-whole-archive
@@ -40,4 +41,6 @@ target_link_libraries(main
     android
     log
     EGL
-    GLESv1_CM)
+    GLESv1_CM
+)
+
