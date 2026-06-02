@@ -100,7 +100,6 @@ inline int get_distance(const sf::Vector2i& A, const sf::Vector2i& B){
 //TODO: create an independent struct for drawing text on screen
 
 struct FpsVisualiser{
-	sf::Font font;
 	sf::Text text;
 	sf::Clock fps_clock;
 	sf::Clock delay_clock;
@@ -110,7 +109,7 @@ struct FpsVisualiser{
 	int  count=0; //no of calls between delay
 	// calculates avg fps between delay.
 	
-	FpsVisualiser(std::string font_path, int text_size=30){
+	FpsVisualiser(sf::Font& font, int text_size=30){
 		font = load_font(font_path);
 		text = get_render_text(font);
 		text.setCharacterSize(text_size);

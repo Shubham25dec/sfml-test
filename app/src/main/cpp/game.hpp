@@ -48,11 +48,11 @@ struct Game{
 	sf::Vector2i  touch_down_pos, touch_up_pos = {0, 0};
 	
 	
-	Game(std::string font_path, int size=4): 
+	Game(sf::Font& font, int size=4): 
 				window(sf::VideoMode::getDesktopMode(), "mygame"), 
-				fps_viz(font_path), 
-				animan(fps_viz.font),
-				reset_button({100, 100}, fps_viz.font, {100, 70}, "reset")
+				fps_viz(font), 
+				animan(font),
+				reset_button({100, 100}, font, {100, 70}, "reset")
 		{
 		grid_size = size;
 		//self.cell_size = (W - (CELL_PAD*self.grid_size))/self.grid_size
@@ -65,7 +65,7 @@ struct Game{
 		_set_cell_and_update();
 		qq::print_grid(grid);
 		
-		text.setFont(fps_viz.font);
+		text.setFont(font);
 		text.setCharacterSize(cell_size * CELL_TEXT_RATIO);
 		anim::center_object_origin(text);
 		

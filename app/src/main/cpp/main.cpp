@@ -8,7 +8,8 @@
 
 
 int main(){
-	Game game("font.ttf", 4);
+    sf::Font font = utils::load_font("font.ttf");
+	Game game(font, 4);
 	game.mainloop();
 
 return 0;
