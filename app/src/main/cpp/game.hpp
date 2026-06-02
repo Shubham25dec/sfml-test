@@ -48,7 +48,7 @@ struct Game{
 	sf::Vector2i  touch_down_pos, touch_up_pos = {0, 0};
 	
 	
-	Game(std::string font_path="font.ttf", int size=4): 
+	Game(std::string font_path, int size=4): 
 				window(sf::VideoMode::getDesktopMode(), "mygame"), 
 				fps_viz(font_path), 
 				animan(fps_viz.font),

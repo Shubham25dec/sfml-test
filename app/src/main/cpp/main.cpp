@@ -1,4 +1,6 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
+#include <SFML/Main.hpp>
 
 #include "utils.hpp"
 #include "constants.hpp"
