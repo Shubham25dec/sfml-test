@@ -20,6 +20,9 @@
 
 struct Game{
     sf::RenderWindow window;
+    
+    sf::Font& _font;
+    
 	sf::Clock clock;
 	utils::FpsVisualiser fps_viz;
 	qq::Grid grid;
@@ -50,6 +53,7 @@ struct Game{
 	
 	Game(sf::Font& font, int size=4): 
 				window(sf::VideoMode::getDesktopMode(), "mygame"), 
+				_font(font),
 				fps_viz(font), 
 				animan(font),
 				reset_button({100, 100}, font, {100, 70}, "reset")
@@ -115,7 +119,7 @@ struct Game{
 			
 			
 			if (reset_button.is_released()){
-				scene::askYesNo(window, fps_viz.font, "Confirm reset??");
+				scene::askYesNo(window, _font, "Confirm reset??");
 			}
 			//drawing begin
 			window.clear(BG_COLOR);
