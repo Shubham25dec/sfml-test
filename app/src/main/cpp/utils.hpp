@@ -110,7 +110,6 @@ struct FpsVisualiser{
 	// calculates avg fps between delay.
 	
 	FpsVisualiser(sf::Font& font, int text_size=30){
-		font = load_font(font_path);
 		text = get_render_text(font);
 		text.setCharacterSize(text_size);
 	}
