@@ -29,7 +29,7 @@ int askYesNo(sf::RenderWindow& window, sf::Font& font,  std::string msg="Yes or 
 				return -1;
 			}else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape){
 				return -1;
-			}else if (event.type == sf::Event::TouchBegan || sf::Event::TouchEnded){
+			}else if (event.type == sf::Event::TouchBegan || event.type == sf::Event::TouchEnded){
 				y_button.handleTouchEvent(event, window);
 				n_button.handleTouchEvent(event, window);
 			}

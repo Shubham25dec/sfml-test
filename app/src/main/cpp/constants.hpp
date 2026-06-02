@@ -1,7 +1,9 @@
 #pragma once
 
+//TODO: get width and height of device instead!!
 #define WIDTH 720
 #define HEIGHT 1600
+//TODO
 
 #define BG_COLOR {30, 30, 30}
 #define CELL_PAD  6
