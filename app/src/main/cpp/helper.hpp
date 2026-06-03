@@ -3,7 +3,6 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <math.h>
-#include <iostream>
 
 #include "animation.hpp"
 
@@ -48,6 +47,7 @@ void init_grid(Grid& grid, int size, int value=0){
 
 
 
+/*
 //TODO: TEMPORARY REMOVE LATER
 void print_grid(const Grid& grid){
 	std::cout << "grid:\n";
@@ -58,9 +58,9 @@ void print_grid(const Grid& grid){
 		std::cout << "\n";
 	}
 }
+*/
 
 
-#include <cassert>
 sf:: Vector2i direction_to_vector(SwipeDirection direction){
 	switch (direction){
 		case UP:
@@ -72,7 +72,7 @@ sf:: Vector2i direction_to_vector(SwipeDirection direction){
 		 case RIGHT:
 		 	return {1, 0};
 		 case INVALID_DIRECTION:
-		 	assert(false && "Inavlid direction");
+		 	return {0, 0}; //assert(false && "Inavlid direction");
 	}
 }
 
@@ -82,15 +82,15 @@ sf::Vector2i _index_map_helper(SwipeDirection direction, int size, int r, int c)
 		case RIGHT : return {r, size-1-c }; break;
 		case UP : return {c, r}; break ;
 		case DOWN : return {size-1-c, r}; break;
-		case INVALID_DIRECTION : 
-		    assert(false && "Invalid Direction");
+		case INVALID_DIRECTION :
+			return {r, c};
+		    //assert(false && "Invalid Direction");
 	}
-	assert(false && "Unreachable");
 }
 
 bool swipe_grid(Grid& grid, Grid& new_grid, SwipeDirection direction, anim::AnimationManager& animan){
      //returns if there was a change in grid
-    assert(grid.size() == new_grid.size() && "grid sizes must be same!");
+    //assert(grid.size() == new_grid.size() && "grid sizes must be same!");
     bool changed = false;
 	int size = grid.size();
 	for (int outer = 0; outer < size; outer++){

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream>
 #include <SFML/Graphics.hpp>
 #include <vector>
 
@@ -19,18 +18,17 @@
 //considered as a swipe during grid swiping!
 
 struct Game{
-    sf::RenderWindow window;
-    
-    sf::Font& _font;
-    
-	sf::Clock clock;
-	utils::FpsVisualiser fps_viz;
-	qq::Grid grid;
+    sf::RenderWindow& window;
+    sf::Font& font;
+	sf::Clock& clock;
 	
-	anim::AnimationManager animan;
+	utils::FpsVisualiser& fps_viz;	
+	anim::AnimationManager& animan;
+
+	qq::Grid grid;
 	Theme current_theme = forest_theme;
 	
-	RoundedRectangleShape  rounded_rect;
+	RoundedRectangleShape rounded_rect;
 	sf::RectangleShape bg_rect;
 	
 	ui::TextButton reset_button;//
@@ -40,6 +38,9 @@ struct Game{
 	int score = 0;
 	bool got2048 = false;
 	bool game_over = false;
+	
+	unsigned int WIDTH;
+	float CELL_PAD;
 	
 	int grid_size;
 	int cell_size;
@@ -51,23 +52,32 @@ struct Game{
 	sf::Vector2i  touch_down_pos, touch_up_pos = {0, 0};
 	
 	
-	Game(sf::Font& font, int size=4): 
-				window(sf::VideoMode::getDesktopMode(), "mygame"), 
-				_font(font),
-				fps_viz(font), 
-				animan(font),
+	Game(sf::RenderWindow& a_window,			
+		 sf::Font& a_font,
+		 sf::Clock& a_clock,
+		 utils::FpsVisualiser& a_fps_viz,
+		 anim::AnimationManager& a_animan,
+		 unsigned int a_grid_size = 4
+		 ): 
+				window(a_window), 
+				font(a_font),
+				clock(a_clock),
+				fps_viz(a_fps_viz),
+				animan(a_animan),
 				reset_button({100, 100}, font, {100, 70}, "reset")
 		{
-		grid_size = size;
-		//self.cell_size = (W - (CELL_PAD*self.grid_size))/self.grid_size
+		grid_size = a_grid_size;
+		sf::Vector2u screen_size = window.getSize();
+		WIDTH    = screen_size.x;
+		CELL_PAD = WIDTH * WIDTH_PAD_RATIO;
+
 		cell_size = (WIDTH - (CELL_PAD * grid_size)) / grid_size ;
-		window.setSize({WIDTH, HEIGHT});
 		qq::init_grid(grid, grid_size, 0);
-		qq::print_grid(grid);
+		//qq::print_grid(grid);
 		//set 2 initial cells
 		_set_cell_and_update();
 		_set_cell_and_update();
-		qq::print_grid(grid);
+		//qq::print_grid(grid);
 		
 		text.setFont(font);
 		text.setCharacterSize(cell_size * CELL_TEXT_RATIO);
@@ -77,8 +87,11 @@ struct Game{
 		rounded_rect.setRadius(15);
 		anim::center_object_origin(rounded_rect);
 		
-		bg_rect.setSize({WIDTH, WIDTH});
-		bg_rect.setPosition(X_OFFSET - CELL_PAD / 2, Y_OFFSET-CELL_PAD / 2);
+		float W  = static_cast<float>(WIDTH);
+		bg_rect.setSize({W, W});
+		float posX = X_OFFSET - (CELL_PAD / 2);
+		float posY = Y_OFFSET - (CELL_PAD / 2);
+		bg_rect.setPosition({posX, posY});
 		bg_rect.setFillColor(sf::Color(187, 173, 160));
 	}
 	
@@ -93,8 +106,8 @@ struct Game{
 				continue;
 			}
 			if (!game_over && is_game_over()){
-				std::cout << "game over!!\n";
-				qq::print_grid(grid);
+				//std::cout << "game over!!\n";
+				//qq::print_grid(grid);
 				game_over = true;
 			}
 			if (!animan.has_animation() && 
@@ -104,13 +117,13 @@ struct Game{
 				 {
 				qq::SwipeDirection swipe_dir = qq::get_swipe_direction(touch_down_pos, touch_up_pos);
 				if (swipe_dir != qq::INVALID_DIRECTION){
-					std::cout << "swiped : " << swipe_dir << "\n";
+					//std::cout << "swiped : " << swipe_dir << "\n";
 					qq::Grid new_grid;
 					qq::init_grid(new_grid, grid_size);
 					bool changed = qq::swipe_grid(grid, new_grid, swipe_dir, animan);
 					if (changed) {
 						grid = new_grid;
-						qq::print_grid(grid);
+						//qq::print_grid(grid);
 						_set_cell_and_update();
 					}
 				}
@@ -119,7 +132,12 @@ struct Game{
 			
 			
 			if (reset_button.is_released()){
-				scene::askYesNo(window, _font, "Confirm reset??");
+				if (scene::askYesNo(window, font, "Confirm reset??") == scene::YES){
+					qq::init_grid(grid, grid_size, 0);
+					game_over = false;
+					_set_cell_and_update();
+					_set_cell_and_update();
+				}
 			}
 			//drawing begin
 			window.clear(BG_COLOR);
@@ -171,11 +189,12 @@ struct Game{
 		while (window.pollEvent(event)){
 			if (event.type == sf::Event::Closed){
 				window.close();
+				std::exit(0);
 			} else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape){
 				window.close();
+				std::exit(0);
 			}else if (event.type == sf::Event::LostFocus){
             	std::cout << "App lost focus\n";
-            	grid[0][0] = 2048;
             	window.setActive(false);
             } else if (event.type == sf::Event::GainedFocus){
             	std::cout << "App gained focus\n";
@@ -195,6 +214,9 @@ struct Game{
 	}
 
 	void _set_cell_and_update(){
+		score = 0;
+		max_tile_number = 0;
+		got2048 = false;
 		std::vector<sf::Vector2i> empty_indices ;
 		for (int x = 0; x < grid_size; x++){
 			for (int y = 0; y < grid_size; y++){

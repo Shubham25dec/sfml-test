@@ -10,8 +10,9 @@ struct ColorPair {
     Color bg_color, fg_color;
 };
 
-typedef std::unordered_map<int, ColorPair> Theme;
+const Color BG_COLOR = Color(30, 30, 30);
 
+typedef std::unordered_map<int, ColorPair> Theme;
 
 Theme neon_theme = {
     {2,     {Color(245, 245, 245), Color(20, 20, 20)}},

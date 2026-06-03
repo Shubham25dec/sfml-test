@@ -1,16 +1,14 @@
 #pragma once
 
-//TODO: get width and height of device instead!!
-#define WIDTH 720
-#define HEIGHT 1600
-//TODO
-
-#define BG_COLOR {30, 30, 30}
-#define CELL_PAD  6
+#define WIDTH_PAD_RATIO  1/120
+//ratio of screen width to the padding b/w cells
+//so if width is W cell padding would be W/120
 
 #define X_OFFSET  0
-#define Y_OFFSET  200
+#define Y_OFFSET  200 
+//TODO: make it depend on screen height
 
 #define CELL_TEXT_RATIO  1/3 
-
 //ratio of text size (numbers text) to the cell size
+//if cell_size is S the size of text would be S/3
+

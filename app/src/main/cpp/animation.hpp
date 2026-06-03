@@ -34,7 +34,10 @@ struct CellMergeAnimation{
 	
 	bool completed = false;
 	
-	CellMergeAnimation(int grid_size, sf::Font& font, sf::Vector2i index, int initial_value, bool is_spawn=false){
+	CellMergeAnimation(sf::Vector2u screen_size, int grid_size, sf::Font& font, sf::Vector2i index, int initial_value, bool is_spawn=false){
+		unsigned int WIDTH    = screen_size.x;
+		unsigned int CELL_PAD = WIDTH * WIDTH_PAD_RATIO;
+		
 		to_index = index;
 		if (is_spawn){
 			value_before = 0;
@@ -65,7 +68,7 @@ struct CellMergeAnimation{
 		value_before_text.setPosition(pos);
 		
 		rounded_rect.setSize({(float)cell_size, (float) cell_size});
-		rounded_rect.setRadius(15);
+		rounded_rect.setRadius(10);
 		center_object_origin(rounded_rect);
 		rounded_rect.setPosition(pos);
 	}
@@ -107,10 +110,14 @@ struct CellMoveAnimation{
 	int value;
 	RoundedRectangleShape rounded_rect;
 	
-	float animation_speed = WIDTH*3.4; //pixels/sec
+	float animation_speed;
 	bool completed  = false;
 	
-	CellMoveAnimation(int grid_size, sf::Font& font, sf::Vector2i from_indx, sf::Vector2i to_indx, int cell_value, sf::Vector2i  move_direction){
+	CellMoveAnimation(sf::Vector2u screen_size, int grid_size, sf::Font& font, sf::Vector2i from_indx, sf::Vector2i to_indx, int cell_value, sf::Vector2i  move_direction){
+		unsigned int WIDTH    = screen_size.x;
+		unsigned int CELL_PAD = WIDTH * WIDTH_PAD_RATIO;
+		
+		animation_speed = WIDTH*3.4; //pixels/sec
 		from_index = from_indx;
 		to_index = to_indx;
 		value = cell_value;
@@ -120,8 +127,8 @@ struct CellMoveAnimation{
 		float x = from_index.x ;
 		float y = from_index.y ;
 		current_pos = {
-		           y * (cell_size + CELL_PAD) +X_OFFSET + cell_size/2, 
-		           x * (cell_size + CELL_PAD) +Y_OFFSET + cell_size/2
+		    y * (cell_size + CELL_PAD) + X_OFFSET + cell_size/2, 
+		    x * (cell_size + CELL_PAD) + Y_OFFSET + cell_size/2
 		};
 		value_text.setFont(font);
 		value_text.setString(std::to_string(value));
@@ -132,12 +139,12 @@ struct CellMoveAnimation{
 		x = to_index.x ;
 		y = to_index.y ;
 		target_pos = {
-		            y * (cell_size + CELL_PAD) +X_OFFSET + cell_size/2, 
-		            x * (cell_size + CELL_PAD) +Y_OFFSET + cell_size/2
+		    y * (cell_size + CELL_PAD) + X_OFFSET + cell_size/2, 
+		    x * (cell_size + CELL_PAD) + Y_OFFSET + cell_size/2
 		};
 		
 		rounded_rect.setSize({(float)cell_size, (float) cell_size});
-		rounded_rect.setRadius(15);
+		rounded_rect.setRadius(10);
 		center_object_origin(rounded_rect);
 		rounded_rect.setPosition(current_pos);
 		
@@ -197,24 +204,25 @@ struct CellMoveAnimation{
 
 struct AnimationManager{
 	sf::Font& font;
+	sf::Vector2u screen_size;
 	
 	std::vector<CellMergeAnimation> merge_anims;
 	std::vector<CellMoveAnimation> move_anims;
 	
 	std::vector<sf::Vector2i> involved_indices;
 	
-	AnimationManager(sf::Font& ur_font): font(ur_font){
+	AnimationManager(sf::Font& ur_font, sf::Vector2u screen_dims): font(ur_font), screen_size(screen_dims){
 		;
 	}
 	
 	void add_merge_animation(int grid_size, sf::Vector2i index, int initial_value, bool is_spawn=false){ //Merge Animation
-		merge_anims.emplace_back(grid_size, font, index, initial_value, is_spawn);
+		merge_anims.emplace_back(screen_size, grid_size, font, index, initial_value, is_spawn);
 		involved_indices.emplace_back(index);
 	}
 	
 	//(int grid_size, sf::Font& font, sf::Vector2i from_indx, sf::Vector2i to_indx, int cell_value, qq::SwipeDirection direction
 	void add_move_animation(int grid_size, sf::Vector2i from_indx, sf::Vector2i to_indx, int cell_value, sf::Vector2i direction){
-		move_anims.emplace_back(grid_size, font, from_indx, to_indx, cell_value, direction);
+		move_anims.emplace_back(screen_size, grid_size, font, from_indx, to_indx, cell_value, direction);
 		involved_indices.emplace_back(to_indx);
 		involved_indices.emplace_back(from_indx);
 	}

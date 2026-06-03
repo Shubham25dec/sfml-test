@@ -7,7 +7,14 @@
 
 namespace scene{
 
-int askYesNo(sf::RenderWindow& window, sf::Font& font,  std::string msg="Yes or no"){
+enum Answer{
+	NO,
+	YES,
+	NOTHING
+};
+
+
+Answer askYesNo(sf::RenderWindow& window, sf::Font& font,  std::string msg="Yes or no"){
 	sf::Text text;
 	text.setFont(font);
 	text.setString(msg);
@@ -26,17 +33,17 @@ int askYesNo(sf::RenderWindow& window, sf::Font& font,  std::string msg="Yes or 
 		sf::Event event;
 		while (window.pollEvent(event)){
 			if (event.type == sf::Event::Closed){
-				return -1;
+				return NOTHING;
 			}else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape){
-				return -1;
+				return NOTHING;
 			}else if (event.type == sf::Event::TouchBegan || event.type == sf::Event::TouchEnded){
 				y_button.handleTouchEvent(event, window);
 				n_button.handleTouchEvent(event, window);
 			}
 		}
 		
-		if (y_button.is_released()) return 1;
-		if (n_button.is_released()) return 0;
+		if (y_button.is_released()) return YES;
+		if (n_button.is_released()) return NO;
 		
 		window.clear(BG_COLOR);
 		
