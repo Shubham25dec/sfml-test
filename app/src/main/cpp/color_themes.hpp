@@ -195,12 +195,12 @@ Theme industrial_theme = {
 
 
 
-/*std::vector<Theme> themes = {
-	neon_theme, forest_theme, greyscale_theme,
-	oceanic_theme, classic_theme, sunset_theme,
+std::vector<Theme> all_themes = {
+	classic_theme, forest_theme, greyscale_theme,
+	oceanic_theme, neon_theme, sunset_theme,
 	cosmic_theme, candy_theme, industrial_theme
 };
-*/
+
 
 Color get_color(Theme& theme, int value, bool bg=true){
 	if (value == 0){

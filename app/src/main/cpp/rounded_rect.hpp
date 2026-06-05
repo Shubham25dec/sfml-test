@@ -3,6 +3,11 @@
 #include <SFML/Graphics.hpp>
 #include <cmath>
 
+
+//FIXME: for some reason if the setRadius function is not called the shape is not being drawn
+//maybe because points are not being initialised until that method
+//is called.
+
 class RoundedRectangleShape : public sf::Shape {
 public:
     RoundedRectangleShape(sf::Vector2f size = {0, 0}, float radius = 0, unsigned int cornerPointCount = 15) 

@@ -36,7 +36,7 @@ struct RNG{
 	
 	template <typename T> T randChoice(std::vector<T>& list){
 		if (list.size() == 0){
-			std::cout << "Error: randChoice list cannot have size 0\n";
+			std::cerr << "Error: randChoice list cannot have size 0\n";
 			std::abort();
 		}
 		std::uniform_int_distribution<> dist(0, list.size()-1);
@@ -45,7 +45,7 @@ struct RNG{
 	}
 	char randChoice(std::string str){
 		if (str.size() == 0){
-			std::cout << "Error: randChoice string cannot have size 0\n";
+			std::cerr << "Error: randChoice string cannot have size 0\n";
 			std::abort();
 		}
 		std::uniform_int_distribution<> dist(0, str.length()-1);
@@ -62,7 +62,7 @@ inline sf::Font load_font(std::string path){
 	sf::Font font;
 		if (!(font.loadFromFile(path)))
 	{
-		std::cout << ("Couldn't load requested font: ")<<path<<"\n";
+		std::cerr << ("Couldn't load requested font: ")<<path<<"\n";
 		exit(69);
 	}
 	return font;

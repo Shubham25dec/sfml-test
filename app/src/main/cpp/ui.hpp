@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream>
 #include <SFML/Graphics.hpp>
 
 #include "utils.hpp"
@@ -108,9 +107,15 @@ struct TextButton{ //A touch screen button which changes states on press - unpre
 		return result;
 	}
 	
-}; //TouchButton 
+	void setBgColor(sf::Color color){
+		rect.setFillColor(color);
+	}
+	
+	void setTextColor(sf::Color color){
+		button_text.setFillColor(color);
+	}
 
-
+}; //TextButton
 
 
 }; //ui

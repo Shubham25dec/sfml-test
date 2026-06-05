@@ -55,5 +55,9 @@ Answer askYesNo(sf::RenderWindow& window, sf::Font& font,  std::string msg="Yes 
 	}
 }
 
+
+void menuScreen(sf::RenderWindow& window, sf::Font& font){
+	;
+}
 	
 };//namespace 

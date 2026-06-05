@@ -35,9 +35,20 @@ struct CellMergeAnimation{
 	bool completed = false;
 	
 	CellMergeAnimation(sf::Vector2u screen_size, int grid_size, sf::Font& font, sf::Vector2i index, int initial_value, bool is_spawn=false){
-		unsigned int WIDTH    = screen_size.x;
-		unsigned int CELL_PAD = WIDTH * WIDTH_PAD_RATIO;
-		
+		float WIDTH    = screen_size.x;
+		float CELL_PAD = WIDTH * WIDTH_PAD_RATIO;
+		float X_OFFSET = (WIDTH / LR_PAD_RATIO) + CELL_PAD/2;
+		WIDTH    = WIDTH - ((X_OFFSET - CELL_PAD/2) * 2);
+		//total available width is now smaller due to LR padding!
+		float Y_OFFSET = (screen_size.y - WIDTH) / 2;
+		//Y_OFFSET is where grid drawing begins on screen
+		//it is calculated so grid is right in the middle of screen
+		//X_OFFSET isnt necessarily useful since we create the grid,
+		//based on the width of screen and we dont want any, offset
+		//in the x direction (left of grid)
+		//instead an LR padding will be implemented
+		//for left-right padding to the grid. 
+		//TODO: ↑
 		to_index = index;
 		if (is_spawn){
 			value_before = 0;
@@ -46,8 +57,8 @@ struct CellMergeAnimation{
 			value_before = initial_value;
 			value_after = value_before * 2; //since a merge means value doubles
 		}
-		int cell_size = (WIDTH - (CELL_PAD * grid_size)) / grid_size ;
-		int target_size = cell_size * CELL_TEXT_RATIO; 
+		float cell_size = (WIDTH - (CELL_PAD * grid_size)) / grid_size ;
+		float target_size = cell_size * CELL_TEXT_RATIO; 
 		
 		value_before_text.setFont(font);
 		value_before_text.setCharacterSize(target_size);
@@ -60,10 +71,12 @@ struct CellMergeAnimation{
 		center_object_origin(value_after_text);
 		value_after_text.setScale(current_scale, current_scale);
 		
-		float x = to_index.x;
-		float y = to_index.y;
-		pos = {y * (cell_size + CELL_PAD) +X_OFFSET + cell_size/2, 
-		            x * (cell_size + CELL_PAD) +Y_OFFSET + cell_size/2};
+		int x = to_index.x;
+		int y = to_index.y;
+		pos = {
+			(float)(y * (cell_size+CELL_PAD) + X_OFFSET) + cell_size/2 + CELL_PAD/2,
+			(float)(x * (cell_size+CELL_PAD) + Y_OFFSET) + cell_size/2 - CELL_PAD/2
+		};
 		value_after_text.setPosition(pos);
 		value_before_text.setPosition(pos);
 		
@@ -114,8 +127,12 @@ struct CellMoveAnimation{
 	bool completed  = false;
 	
 	CellMoveAnimation(sf::Vector2u screen_size, int grid_size, sf::Font& font, sf::Vector2i from_indx, sf::Vector2i to_indx, int cell_value, sf::Vector2i  move_direction){
-		unsigned int WIDTH    = screen_size.x;
-		unsigned int CELL_PAD = WIDTH * WIDTH_PAD_RATIO;
+		float WIDTH    = screen_size.x;
+		float CELL_PAD = WIDTH * WIDTH_PAD_RATIO;
+		float X_OFFSET = (WIDTH / LR_PAD_RATIO) + CELL_PAD/2;
+		WIDTH    = WIDTH - ((X_OFFSET - CELL_PAD/2) * 2);
+		//total available width is now smaller due to LR padding!
+		float Y_OFFSET = (screen_size.y - WIDTH) / 2;
 		
 		animation_speed = WIDTH*3.4; //pixels/sec
 		from_index = from_indx;
@@ -123,12 +140,12 @@ struct CellMoveAnimation{
 		value = cell_value;
 		direction = move_direction ;
 		
-		int cell_size = (WIDTH - (CELL_PAD * grid_size)) / grid_size ;
-		float x = from_index.x ;
-		float y = from_index.y ;
+		float cell_size = (WIDTH - (CELL_PAD * grid_size)) / grid_size ;
+		int x = from_index.x ;
+		int y = from_index.y ;
 		current_pos = {
-		    y * (cell_size + CELL_PAD) + X_OFFSET + cell_size/2, 
-		    x * (cell_size + CELL_PAD) + Y_OFFSET + cell_size/2
+			(float)(y * (cell_size+CELL_PAD) + X_OFFSET) + cell_size/2 + CELL_PAD/2,
+			(float)(x * (cell_size+CELL_PAD) + Y_OFFSET) + cell_size/2 - CELL_PAD/2
 		};
 		value_text.setFont(font);
 		value_text.setString(std::to_string(value));
@@ -139,8 +156,8 @@ struct CellMoveAnimation{
 		x = to_index.x ;
 		y = to_index.y ;
 		target_pos = {
-		    y * (cell_size + CELL_PAD) + X_OFFSET + cell_size/2, 
-		    x * (cell_size + CELL_PAD) + Y_OFFSET + cell_size/2
+			(float)(y * (cell_size+CELL_PAD) + X_OFFSET) + cell_size/2 + CELL_PAD/2,
+			(float)(x * (cell_size+CELL_PAD) + Y_OFFSET) + cell_size/2
 		};
 		
 		rounded_rect.setSize({(float)cell_size, (float) cell_size});
