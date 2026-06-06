@@ -38,8 +38,9 @@ struct Game{
 	
 	//sf::Vector2i last_spawn_index = {0, 0};
 	//int max_tile_number = 0;
-	int score = 0;
-	bool got2048 = false;
+	int score      = 0;
+	int high_score = 0;
+	bool got2048   = false;
 	bool game_over = false;
 	
 	float WIDTH;
@@ -54,9 +55,13 @@ struct Game{
 	
 	//
 	sf::Text number_text; //text used for nums
-	sf::Text score_text; //text for score, game over etc..
+	sf::Text score_text; //text for score
+	sf::Text high_score_text;
+	sf::Text game_status_text; //text for win and over
 	//
 	qq::SwipeState swipe_state = qq::YET_TO_SWIPE;
+	qq::HS_Container high_score_container;
+	
 	sf::Vector2i  touch_down_pos, touch_up_pos = {0, 0};
 	
 	
@@ -67,7 +72,7 @@ struct Game{
 		 anim::AnimationManager& a_animan,
 		 ui::TextButton& a_theme_btn,
 		 ui::TextButton& a_reset_btn,
-		 unsigned int a_grid_size = 4
+		 qq::GridKind grid_kind = qq::FOUR_BY_FOUR
 		 ): 
 				window(a_window), 
 				font(a_font),
@@ -77,7 +82,7 @@ struct Game{
 				reset_button(a_reset_btn),
 				theme_button(a_theme_btn)
 		{
-		grid_size = a_grid_size;
+		grid_size = qq::grid_size_from_kind(grid_kind);
 		sf::Vector2u screen_size = window.getSize();
 		WIDTH    = screen_size.x;
 		CELL_PAD = WIDTH * WIDTH_PAD_RATIO;
@@ -86,13 +91,15 @@ struct Game{
 		Y_OFFSET = (screen_size.y - WIDTH) / 2;
 		//y_offset is such that grid fits in middle of screen
 	
-		cell_size = (WIDTH - (CELL_PAD * grid_size)) / grid_size ; // -1 because we dont pad the last cell
+		cell_size = (WIDTH - (CELL_PAD * grid_size)) / grid_size ;
 		qq::init_grid(grid, grid_size, 0);
-		//qq::print_grid(grid);
 		//set 2 initial cells
-		_set_cell_and_update();
-		_set_cell_and_update();
-		//qq::print_grid(grid);
+		if (! _load_saved_game()){
+			_set_cell_and_update();
+			_set_cell_and_update();
+		}else{ //game was loaded
+			_set_cell_and_update(true); //true = update onl
+		}
 		
 		theme_index = utils::rng.randInt(0, all_themes.size()-1);
 		current_theme = all_themes[theme_index];
@@ -100,11 +107,25 @@ struct Game{
 		number_text.setFont(font);
 		number_text.setCharacterSize(cell_size * CELL_TEXT_RATIO);
 		anim::center_object_origin(number_text);
+
+		high_score_text.setFont(font);
+		high_score_text.setCharacterSize(WIDTH/24);
+		high_score_text.setString("High Score: " + std::to_string(high_score));
+		high_score_text.setPosition({20, 60});
 		
 		score_text.setFont(font);
 		score_text.setCharacterSize(WIDTH/24);
 		score_text.setString("Score: 0");
-		score_text.setPosition({20, 60});
+		auto hst_bound = high_score_text.getGlobalBounds();
+		score_text.setPosition({20, hst_bound.top + hst_bound.height + 20});
+		
+		game_status_text.setFont(font);
+		game_status_text.setCharacterSize(WIDTH/18);
+		game_status_text.setString("Acieved 2048");
+		anim::center_object_origin(game_status_text);
+		auto b = game_status_text.getGlobalBounds();
+		sf::Vector2f pos = {(float)screen_size.x/2, Y_OFFSET - b.height * 2};
+		game_status_text.setPosition(pos);
 		
 		
 		rounded_rect.setSize({(float)cell_size, (float) cell_size});
@@ -182,16 +203,20 @@ struct Game{
 			//drawing begin
 			window.clear(BG_COLOR);
 			_render_grid();
-			
-			window.draw(score_text);
 
+			window.draw(high_score_text);
+			window.draw(score_text);
+			
+			if (got2048) window.draw(game_status_text);
+			
 			animan.draw_and_update(window, dt, current_theme);
 			
 			reset_button.draw(window);
 			theme_button.draw(window);
 			
 			if (game_over){
-				utils::show_info(window, number_text, "Game Over!!", {100, 100}, "");
+				game_status_text.setString(" Game Over! ");
+				window.draw(game_status_text);
 			}
 			//drawing end
 			window.display();
@@ -232,9 +257,11 @@ struct Game{
 		while (window.pollEvent(event)){
 			if (event.type == sf::Event::Closed){
 				window.close();
+				_save_game();
 				std::exit(0);
 			} else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape){
 				window.close();
+				_save_game();
 				std::exit(0);
 			}else if (event.type == sf::Event::LostFocus){
             	std::cout << "App lost focus\n";
@@ -257,7 +284,7 @@ struct Game{
 		} //event loop ends
 	}
 
-	void _set_cell_and_update(){
+	void _set_cell_and_update(bool update_only=false){
 		score = 0;
 		//max_tile_number = 0;
 		got2048 = false;
@@ -277,6 +304,11 @@ struct Game{
 				}
 			}
 		}
+		if (update_only) {
+			score_text.setString("Score: " + std::to_string(score));
+			return;
+		}
+		
 		if (empty_indices.size() > 0){
 			sf::Vector2i empty_cell = utils::rng.randChoice(empty_indices);
 			int n = (utils::rng.randFloat() < 0.9) ? 2 : 4;
@@ -286,6 +318,10 @@ struct Game{
 			score += n;
 		}
 		score_text.setString("Score: " + std::to_string(score));
+		if (score > high_score){
+			high_score = score;
+			high_score_text.setString("High Score: " + std::to_string(high_score));
+		}
 	}
 	
 	
@@ -302,6 +338,34 @@ struct Game{
 		}
 		return true;
 	}
-	
-	
+
+	bool _save_game(){
+		switch (grid_size){
+			case 4: high_score_container.four = high_score;  break;
+			case 5: high_score_container.five = high_score;  break;
+			case 6: high_score_container.six  = high_score;   break;
+			case 8: high_score_container.eight= high_score; break;
+		}
+		qq::write_high_scores_to_file(high_score_container);
+		std::string filename = qq::filename_for_grid_kind(qq::grid_kind_from_size(grid_size));
+		return qq::write_grid_to_file(grid, filename);
+	}
+
+	bool _load_saved_game(){
+		qq::read_high_scores_from_file(high_score_container);
+		_set_high_score_from_container();
+		high_score_text.setString("High Score: " + std::to_string(high_score));
+		std::string filename = qq::filename_for_grid_kind(qq::grid_kind_from_size(grid_size));
+		return qq::read_grid_from_file(grid, filename);
+	}
+
+	void _set_high_score_from_container(){
+		switch (grid_size){
+			case 4: high_score = high_score_container.four;  return;
+			case 5: high_score = high_score_container.five;  return;
+			case 6: high_score = high_score_container.six;   return;
+			case 8: high_score = high_score_container.eight; return;
+		}
+		high_score = 0;
+	}
 };//Game

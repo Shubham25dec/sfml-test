@@ -5,7 +5,6 @@
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 
-#include <filesystem>
 #include <vector>
 #include <string>
 #include <random>

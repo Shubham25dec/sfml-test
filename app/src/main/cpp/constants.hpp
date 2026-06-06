@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 #define WIDTH_PAD_RATIO  1/100
 //ratio of screen width to the padding b/w cells
@@ -14,3 +15,4 @@
 //ratio of text size (numbers text) to the cell size
 //if cell_size is S the size of text would be S/3
 
+const std::string HIGH_SCORE_FILENAME = "high_scores.txt";

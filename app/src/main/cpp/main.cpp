@@ -38,9 +38,15 @@ int main(){
     btn_x -= btn_w + PAD;
     ui::TextButton theme_button({btn_x, btn_y}, font, {btn_w, btn_h}, "Theme");
     
-    int grid_size = 4;
-	Game game(window, font, clock, move_sound, animan,theme_button, reset_button, grid_size);
-	game.mainloop();
+    qq::GridKind kind = qq::FOUR_BY_FOUR;
+	Game game(window, font, clock, move_sound, animan,theme_button, reset_button, kind);
 	
+	while (1){
+		if (scene::menuScreen(window, font) == 1){
+			game.mainloop(); //TODO: gameloop will exit app on back key press, so currently there is no way to come back from the function!
+		}else{
+			scene::aboutScreen(window, font);
+		}
+	}	
 return 0;
 }//main
