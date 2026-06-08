@@ -28,7 +28,7 @@ struct TextButton{ //A touch screen button which changes states on press - unpre
 		rect.setPosition(pos);
 		
 		button_text.setFont(font);
-		button_text.setCharacterSize(50);
+		button_text.setCharacterSize(size.x);
 		button_text.setString(text);
 		bounds = button_text.getLocalBounds();
 		button_text.setOrigin(bounds.left + bounds.width/2, bounds.top + bounds.height/2); //bounds.left added to fix internal glyph padding,

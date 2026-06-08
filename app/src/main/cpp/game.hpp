@@ -17,7 +17,7 @@
 //a swipe smaller in length than this value is not
 //considered as a swipe during grid swiping!
 
-struct Game{
+struct Game{	
     sf::RenderWindow& window;
     sf::Font& font;
 	sf::Clock& clock;
@@ -63,9 +63,8 @@ struct Game{
 	qq::HS_Container high_score_container;
 	
 	sf::Vector2i  touch_down_pos, touch_up_pos = {0, 0};
-	
-	
-	Game(sf::RenderWindow& a_window,			
+
+	Game(sf::RenderWindow& a_window,		
 		 sf::Font& a_font,
 		 sf::Clock& a_clock,
 		 sf::Sound& a_move_sound,
@@ -87,10 +86,11 @@ struct Game{
 		WIDTH    = screen_size.x;
 		CELL_PAD = WIDTH * WIDTH_PAD_RATIO;
 		X_OFFSET = (WIDTH / LR_PAD_RATIO) + CELL_PAD/2;
+
 		WIDTH    = WIDTH - ((X_OFFSET - CELL_PAD/2) * 2); //total available width is now smaller due to LR padding (X_OFFSET)!
-		Y_OFFSET = (screen_size.y - WIDTH) / 2;
+		Y_OFFSET = (screen_size.y - WIDTH)/ 2;
 		//y_offset is such that grid fits in middle of screen
-	
+		
 		cell_size = (WIDTH - (CELL_PAD * grid_size)) / grid_size ;
 		qq::init_grid(grid, grid_size, 0);
 		//set 2 initial cells
@@ -149,12 +149,18 @@ struct Game{
 	void mainloop(){
 		
 		while (window.isOpen()){
-			_handle_events(); //VERY IMPORTANT!!
+			bool keep_play =_handle_events(); //VERY IMPORTANT!!
+			if (!keep_play){ //go back;
+				return;
+			}
+			
 			float dt = clock.restart().asSeconds();
+			
 			if (!window.hasFocus()) {
 				sf::sleep(sf::milliseconds(500));
 				continue;
 			}
+			
 			if (!game_over && is_game_over()){
 				//std::cout << "game over!!\n";
 				//qq::print_grid(grid);
@@ -202,6 +208,7 @@ struct Game{
 			
 			//drawing begin
 			window.clear(BG_COLOR);
+			
 			_render_grid();
 
 			window.draw(high_score_text);
@@ -252,22 +259,21 @@ struct Game{
 	}
 	
 	
-	void _handle_events(){
+	bool _handle_events(){
+		//return false on exit events
 		sf::Event event;
 		while (window.pollEvent(event)){
 			if (event.type == sf::Event::Closed){
-				window.close();
 				_save_game();
-				std::exit(0);
+				return false;
 			} else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape){
-				window.close();
 				_save_game();
-				std::exit(0);
+				return false;
 			}else if (event.type == sf::Event::LostFocus){
-            	std::cout << "App lost focus\n";
+            	//std::cout << "App lost focus\n";
             	window.setActive(false);
             } else if (event.type == sf::Event::GainedFocus){
-            	std::cout << "App gained focus\n";
+            	//std::cout << "App gained focus\n";
             	window.setActive(true);
             }
             if (event.type == sf::Event::TouchBegan || event.type == sf::Event::TouchEnded){
@@ -282,6 +288,7 @@ struct Game{
 	            }
             }
 		} //event loop ends
+		return true;
 	}
 
 	void _set_cell_and_update(bool update_only=false){

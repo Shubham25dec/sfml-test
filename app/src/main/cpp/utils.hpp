@@ -113,7 +113,7 @@ struct FpsVisualiser{
 		text.setCharacterSize(text_size);
 	}
 	
-	void show_fps(sf::RenderWindow& window, sf::Vector2f pos={20, 40}, float rotation=0){
+	void show_fps(sf::RenderWindow& window, sf::Vector2f pos={10, 10}, float rotation=0){
 		int current_fps = 1.0f/fps_clock.restart().asSeconds();
 		numerators+= current_fps;
 		count +=1;

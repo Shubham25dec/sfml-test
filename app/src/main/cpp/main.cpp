@@ -31,7 +31,7 @@ std::string getAndroidSaveDir() {
 int main(){
     sf::Font font = utils::load_font("font.ttf");
     sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "2048 game");
-
+    
 //++++++++++++++++++++++++++++++++++++
     #if defined(__ANDROID__)
     	SAVE_DIR = getAndroidSaveDir();
@@ -42,7 +42,6 @@ int main(){
     sf::Vector2u screen_size = window.getSize();
     
     sf::Clock clock;
-    anim::AnimationManager animan(font, screen_size);
     
     sf::SoundBuffer move_sound_buffer;
     if (!move_sound_buffer.loadFromFile("move.ogg")){
@@ -63,16 +62,13 @@ int main(){
   
     btn_x -= btn_w + PAD;
     ui::TextButton theme_button({btn_x, btn_y}, font, {btn_w, btn_h}, "Theme");
-    
-    qq::GridKind kind = qq::FOUR_BY_FOUR;
-	Game game(window, font, clock, move_sound, animan,theme_button, reset_button, kind);
 	
 	while (1){
-		if (scene::menuScreen(window, font) == 1){
-			game.mainloop(); //TODO: gameloop will exit app on back key press, so currently there is no way to come back from the function!
-		}else{
-			scene::aboutScreen(window, font);
-		}
-	}	
+		auto kind = scene::menuScreen(window, font);
+		anim::AnimationManager animan(font, window.getSize());
+		Game game(window, font, clock, move_sound, animan,theme_button, reset_button, kind);
+		game.mainloop();
+	}
+
 return 0;
 }//main
