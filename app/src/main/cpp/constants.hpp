@@ -16,30 +16,5 @@
 //ratio of text size (numbers text) to the cell size
 //if cell_size is S the size of text would be S/3
 
-
-
-#if defined(__ANDROID__)
-#include <android/native_activity.h>
-#include <SFML/System/NativeActivity.hpp>
-
-std::string getAndroidSaveDir() {
-    //access the underlying ANativeActivity structure from SFML
-    ANativeActivity* activity = sf::getNativeActivity();
-    if (activity != nullptr && activity->internalDataPath != nullptr) {
-        return std::string(activity->internalDataPath) + "/";
-    }else{
-    	std::cerr << "Failed to get internal directory path" << std::endl;
-    }
-    return "./";
-}
-#endif
-
-#if defined(__ANDROID__)
-	std::string SAVE_DIR = getAndroidSaveDir();
-#else
-	std::string SAVE_DIR = "./";
-#endif
-
-
+const std::string SAVE_DIR = "./";
 const std::string HIGH_SCORE_FILEPATH = SAVE_DIR + "high_scores.txt";
-

@@ -13,6 +13,31 @@
 int main(){
     sf::Font font = utils::load_font("font.ttf");
     sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "2048 game");
+
+
+//++++++++++++++++++++++++++++++++++++
+    #if defined(__ANDROID__)
+    #include <android/native_activity.h>
+    #include <SFML/System/NativeActivity.hpp>
+    
+    std::string getAndroidSaveDir() {
+        //access the underlying ANativeActivity structure from SFML
+        ANativeActivity* activity = sf::getNativeActivity();
+        if (activity != nullptr && activity->internalDataPath != nullptr) {
+            return std::string(activity->internalDataPath) + "/";
+        }else{
+        	std::cerr << "Failed to get internal directory path" << std::endl;
+        }
+        return "./";
+    }
+    #endif
+    
+    #if defined(__ANDROID__)
+    	SAVE_DIR = getAndroidSaveDir();
+    	HIGH_SCORE_FILEPATH = SAVE_DIR + "high_scores.txt";
+    #endif
+//++++++++++++++++++++++++++++++++++++
+
     sf::Vector2u screen_size = window.getSize();
     
     sf::Clock clock;
