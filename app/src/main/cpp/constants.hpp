@@ -16,5 +16,5 @@
 //ratio of text size (numbers text) to the cell size
 //if cell_size is S the size of text would be S/3
 
-const std::string SAVE_DIR = "./";
-const std::string HIGH_SCORE_FILEPATH = SAVE_DIR + "high_scores.txt";
+inline std::string SAVE_DIR = "./";
+inline std::string HIGH_SCORE_FILEPATH = SAVE_DIR + "high_scores.txt";
