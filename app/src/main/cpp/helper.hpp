@@ -57,16 +57,16 @@ GridKind grid_kind_from_size(int grid_size){
 	return FOUR_BY_FOUR; //in case grid_size is something else
 }
 
-std::string filename_for_grid_kind(GridKind kind){
+std::string filepath_for_grid_kind(GridKind kind){
 	switch (kind){
 		case FOUR_BY_FOUR:
-		    return "4.grid";
+		    return SAVE_DIR + "4.grid";
 		case FIVE_BY_FIVE:
-			return "5.grid";
+			return SAVE_DIR + "5.grid";
 		case SIX_BY_SIX:
-			return "6.grid";
+			return SAVE_DIR + "6.grid";
 		case EIGHT_BY_EIGHT:
-			return "7.grid";
+			return SAVE_DIR + "7.grid";
 	}
 }
 
@@ -89,10 +89,11 @@ int get_col(int index, int grid_size){
 	return (int) (index % grid_size);
 }
 
-bool write_grid_to_file(const Grid& grid, const std::string& filename){
-	std::ofstream outfile(filename, std::ios::binary);
+bool write_grid_to_file(const Grid& grid){
+	const std::string filepath = filepath_for_grid_kind(grid_kind_from_size(grid.size()));
+	std::ofstream outfile(filepath, std::ios::binary);
 	if (!outfile){
-		std::cerr << "E: Could not open file: " << filename << std::endl;
+		std::cerr << "E: Could not open file: " << filepath << std::endl;
 		return false;
 	}
 	outfile << grid.size() << " ";
@@ -105,10 +106,12 @@ bool write_grid_to_file(const Grid& grid, const std::string& filename){
 	return true;
 }
 
-bool read_grid_from_file(Grid& grid, const std::string& filename){
-    std::ifstream infile(filename);
+bool read_grid_from_file(Grid& grid){
+	const std::string filepath = filepath_for_grid_kind(grid_kind_from_size(grid.size()));
+	
+    std::ifstream infile(filepath);
     if (!infile){
-    	std::cerr << "E: Could not open file: " << filename << std::endl;
+    	std::cerr << "E: Could not open file: " << filepath << std::endl;
     	return false;
     }
     int grid_size = -1;
@@ -146,7 +149,7 @@ struct HS_Container{
 	int eight= 0;
 }; //high score container
 
-bool read_high_scores_from_file(HS_Container& hs_container, const std::string& filename = HIGH_SCORE_FILENAME){
+bool read_high_scores_from_file(HS_Container& hs_container, const std::string& filename = HIGH_SCORE_FILEPATH){
 	if (!file_good(filename)){
 		std::cerr << "E: file not found or permission denied: " << filename << std::endl;
 		return false;
@@ -178,7 +181,7 @@ bool read_high_scores_from_file(HS_Container& hs_container, const std::string& f
 	return (index > 0)? true : false;
 }
 
-bool write_high_scores_to_file(const HS_Container& hs_container, const std::string& filename = HIGH_SCORE_FILENAME){
+bool write_high_scores_to_file(const HS_Container& hs_container, const std::string& filename = HIGH_SCORE_FILEPATH){
 	std::ofstream outfile(filename);
 	if (!outfile){
 		std::cerr << "E: Failed to open file for writing" << filename << std::endl;

@@ -347,16 +347,14 @@ struct Game{
 			case 8: high_score_container.eight= high_score; break;
 		}
 		qq::write_high_scores_to_file(high_score_container);
-		std::string filename = qq::filename_for_grid_kind(qq::grid_kind_from_size(grid_size));
-		return qq::write_grid_to_file(grid, filename);
+		return qq::write_grid_to_file(grid);
 	}
 
 	bool _load_saved_game(){
 		qq::read_high_scores_from_file(high_score_container);
 		_set_high_score_from_container();
 		high_score_text.setString("High Score: " + std::to_string(high_score));
-		std::string filename = qq::filename_for_grid_kind(qq::grid_kind_from_size(grid_size));
-		return qq::read_grid_from_file(grid, filename);
+		return qq::read_grid_from_file(grid);
 	}
 
 	void _set_high_score_from_container(){
